@@ -239,7 +239,48 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-    a { color: var(--accent); }
+    a { color: var(--accent); }/* 1) Tighter clock spacing around the colon */
+.clock {
+  gap: 0; /* remove global gap so HH:MM is tight */
+}
+.clock .ampm {
+  margin-left: 10px; /* restore spacing only before AM/PM */
+}
+.colon {
+  width: auto;            /* use natural glyph width */
+  padding: 0 0.05ch;      /* hairline breathing room */
+  /* keep your blink animation as-is */
+}
+
+/* 2) 45° gradient glint border (blue → magenta) */
+.window {
+  position: relative;
+  border: 1px solid transparent; /* lets the gradient border show cleanly */
+}
+.window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  /* Thickness of the glint: 1px. Increase to 2px by changing padding to 2px. */
+  padding: 2px;
+
+  /* The glint gradient at 45 degrees */
+  background: linear-gradient(45deg, #5da8ff, #ff5bd7);
+
+  /* Mask so only the border ring shows (keeps the interior transparent) */
+  -webkit-mask: 
+    linear-gradient(#000 0 0) content-box, 
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
+  pointer-events: none; /* don’t block clicks */
+  opacity: 0.95;        /* tweak intensity if desired */
+}
+
+	
   </style>
 </head>
 <body>
