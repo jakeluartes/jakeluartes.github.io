@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Start Page</title>
+  <style>
+    :root {
+      /* Light theme (daytime) */
+      --bg1: #e9ecf6;
+      --bg2: #c9cfe2;
+      --glass-bg: rgba(255,255,255,0.12);
+      --glass-card: rgba(255,255,255,0.16);
+      --glass-border: rgba(255,255,255,0.35);
+      --text: rgba(10,10,10,0.9);
+      --text-dim: rgba(10,10,10,0.65);
+      --accent: #0b6bcb;
+      --shadow: 0 30px 60px rgba(0,0,0,0.18);
+      --search-bg: rgba(255,255,255,0.6);
+      --search-border: rgba(0,0,0,0.08);
+      --chip-bg: rgba(0,0,0,0.06);
+      --chip-text: rgba(0,0,0,0.7);
+
+      --radius-xl: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --blur: 22px;
+      --sat: 1.8;
+      --header-gap: 18px;
+      --max-width: 1100px;
+      --clock-size: clamp(44px, 11vw, 96px);
+      --clock-weight: 700;
+    }
+
+    body.dark {
+      /* Dark theme (5pm–8am) */
+      --bg1: #0d1117;
+      --bg2: #1a1f2b;
+      --glass-bg: rgba(22,24,30,0.45);
+      --glass-card: rgba(22,24,30,0.55);
+      --glass-border: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --text-dim: rgba(255,255,255,0.7);
+      --accent: #6aa9ff;
+      --shadow: 0 30px 60px rgba(0,0,0,0.5);
+      --search-bg: rgba(255,255,255,0.08);
+      --search-border: rgba(255,255,255,0.12);
+      --chip-bg: rgba(255,255,255,0.08);
+      --chip-text: rgba(255,255,255,0.75);
+    }
+
+    /* Page background */
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: ui-rounded, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                   "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 10% 10%, var(--bg1) 0%, var(--bg2) 100%),
+        linear-gradient(120deg, var(--bg1), var(--bg2));
+      background-attachment: fixed;
+    }
+
+    .wrap {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      box-sizing: border-box;
+    }
+
+    .window {
+      width: min(100%, var(--max-width));
+      border-radius: var(--radius-xl);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: saturate(var(--sat)) blur(var(--blur));
+      -webkit-backdrop-filter: saturate(var(--sat)) blur(var(--blur));
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    /* Header row: Clock + controls */
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: var(--header-gap);
+    }
+
+    .clock {
+      line-height: 1;
+      letter-spacing: -0.02em;
+      font-size: var(--clock-size);
+      font-weight: var(--clock-weight);
+      font-variant-numeric: tabular-nums;
+      text-shadow:
+        0 1px 0 rgba(255,255,255,0.12),
+        0 12px 30px rgba(0,0,0,0.18);
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .clock .ampm {
+      font-size: clamp(14px, 2.2vw, 18px);
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      transform: translateY(6%);
+    }
+    .colon {
+      display: inline-block;
+      width: 0.6ch;
+      text-align: center;
+      animation: blink 2s steps(2, jump-none) infinite;
+      opacity: 0.9;
+    }
+    @keyframes blink { 0% { opacity: 1 } 50% { opacity: 0 } 100% { opacity: 1 } }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .chip, .btn {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: var(--chip-bg);
+      color: var(--chip-text);
+      border: 1px solid var(--glass-border);
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .btn { background: var(--search-bg); }
+    .chip[aria-pressed="true"] { outline: 2px solid var(--accent); }
+
+    /* Search section */
+    .search {
+      margin-top: clamp(10px, 2vh, 18px);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .search form {
+      display: flex;
+      gap: 10px;
+      background: var(--search-bg);
+      border: 1px solid var(--search-border);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      align-items: center;
+    }
+    .search input[type="text"] {
+      flex: 1;
+      font: inherit;
+      font-size: clamp(16px, 2.8vw, 18px);
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      outline: 0;
+    }
+    .search button[type="submit"] {
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Bookmarks grid */
+    .bookmarks {
+      margin-top: clamp(16px, 3vh, 26px);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: var(--glass-card);
+      border: 1px solid var(--glass-border);
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .08s ease, background .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover { transform: translateY(-1px); }
+    .card:active { transform: translateY(0); }
+    .icon {
+      width: 24px; height: 24px; border-radius: 6px; overflow: hidden;
+      display: grid; place-items: center;
+      background: rgba(0,0,0,0.08);
+    }
+    .icon img { width: 100%; height: 100%; object-fit: contain; }
+    .title {
+      font-weight: 600;
+    }
+    .host {
+      font-size: 12px; color: var(--text-dim);
+    }
+    .remove {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    .editing .remove { display: inline; }
+    .add-card {
+      display: none;
+      border: 1px dashed var(--glass-border);
+      background: transparent;
+      color: var(--text-dim);
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .editing .add-card { display: grid; }
+
+    /* Footer hints */
+    .foot {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="window" id="window">
+      <div class="header">
+        <div class="clock" aria-live="polite" id="clock">
+          <span id="hh">--</span><span class="colon">:</span><span id="mm">--</span>
+          <span class="ampm" id="ampm">--</span>
+        </div>
+        <div class="controls">
+          <button class="chip" id="themeAuto" aria-pressed="true" title="Theme: auto by time">Auto</button>
+          <button class="btn" id="themeToggle" title="Toggle dark/light">🌙</button>
+          <button class="btn" id="editToggle" title="Edit bookmarks">Edit</button>
+        </div>
+      </div>
+
+      <section class="search" aria-label="Search">
+        <form id="searchForm" action="https://kagi.com/search" method="get" target="_self" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15.5 15.5L22 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          <input id="q" type="text" name="q" placeholder="Search Kagi…" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+      </section>
+
+      <section class="bookmarks" id="bookmarks" aria-label="Bookmarks">
+        <!-- Cards will be rendered here -->
+        <button class="card add-card" id="addBtn" type="button">＋ Add bookmark</button>
+      </section>
+
+      <div class="foot">
+        <span>Tip: Click Edit to add/remove bookmarks. Changes save to this browser.</span>
+        <span>Dark mode: auto from 5:00 PM to 8:00 AM (local time).</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ Clock (12-hour, Apple-ish) ============
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = now.getMinutes();
+      const am = h < 12;
+      const h12 = ((h + 11) % 12) + 1; // 1..12
+      document.getElementById('hh').textContent = String(h12).padStart(2, '0');
+      document.getElementById('mm').textContent = String(m).padStart(2, '0');
+      document.getElementById('ampm').textContent = am ? 'AM' : 'PM';
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ============ Theme (auto dark 5pm–8am, with manual override) ============
+    const body = document.body;
+    const THEME_KEY = 'start_theme_mode'; // 'auto' | 'dark' | 'light'
+    const themeAutoBtn = document.getElementById('themeAuto');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    let themeMode = localStorage.getItem(THEME_KEY) || 'auto';
+
+    function isDarkScheduled(d = new Date()) {
+      const h = d.getHours();
+      return (h >= 17 || h < 8); // 5pm–8am
+    }
+    function applyTheme() {
+      let dark;
+      if (themeMode === 'auto') {
+        dark = isDarkScheduled();
+        themeAutoBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        dark = (themeMode === 'dark');
+        themeAutoBtn.setAttribute('aria-pressed', 'false');
+      }
+      body.classList.toggle('dark', dark);
+      themeToggleBtn.textContent = dark ? '☀️' : '🌙';
+      themeToggleBtn.title = dark ? 'Switch to light' : 'Switch to dark';
+    }
+    themeAutoBtn.addEventListener('click', () => {
+      themeMode = 'auto';
+      localStorage.setItem(THEME_KEY, themeMode);
+      applyTheme();
+    });
+    themeToggleBtn.addEventListener('click', () => {
+      if (themeMode === 'auto') {
+        themeMode = body.classList.contains('dark') ? 'light' : 'dark';
+      } else {
+        themeMode = (themeMode === 'dark') ? 'light' : 'dark';
+      }
+      localStorage.setItem(THEME_KEY, themeMode);
+      applyTheme();
+    });
+    applyTheme();
+    // Re-evaluate schedule every 5 minutes if in auto mode
+    setInterval(() => { if (themeMode === 'auto') applyTheme(); }, 5 * 60 * 1000);
+
+    // ============ Bookmarks (editable, saved to localStorage) ============
+    const BM_KEY = 'start_bookmarks_v1';
+    const defaultBookmarks = [
+      // Replace or add your favorites here, or use Edit button in the UI.
+      { title: 'Kagi', url: 'https://kagi.com/' },
+      { title: 'Mail', url: 'https://mail.google.com/' },
+      { title: 'GitHub', url: 'https://github.com/' },
+      { title: 'YouTube', url: 'https://www.youtube.com/' },
+      { title: 'Discord', url: 'https://discord.com/app' },
+      { title: 'Spotify', url: 'https://open.spotify.com/' }
+    ];
+
+    function loadBookmarks() {
+      try {
+        const raw = localStorage.getItem(BM_KEY);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr)) return arr;
+        }
+      } catch {}
+      return defaultBookmarks;
+    }
+    function saveBookmarks(arr) {
+      try { localStorage.setItem(BM_KEY, JSON.stringify(arr)); } catch {}
+    }
+    function faviconFor(url) {
+      try {
+        const host = new URL(url).hostname;
+        return `https://icons.duckduckgo.com/ip3/${host}.ico`;
+      } catch { return ''; }
+    }
+
+    const bmContainer = document.getElementById('bookmarks');
+    const addBtn = document.getElementById('addBtn');
+    const editToggle = document.getElementById('editToggle');
+    let editing = false;
+    let bookmarks = loadBookmarks();
+
+    function renderBookmarks() {
+      // Remove all cards except the Add button
+      [...bmContainer.querySelectorAll('.card.bm')].forEach(n => n.remove());
+
+      bookmarks.forEach((b, i) => {
+        const a = document.createElement('a');
+        a.className = 'card bm';
+        a.href = b.url;
+        a.target = '_self';
+        a.rel = 'noopener';
+        a.draggable = false;
+
+        const icon = document.createElement('div');
+        icon.className = 'icon';
+        const img = document.createElement('img');
+        img.alt = '';
+        img.referrerPolicy = 'no-referrer';
+        img.src = b.icon || faviconFor(b.url);
+        img.onerror = () => { img.remove(); icon.textContent = '🌐'; };
+        icon.appendChild(img);
+
+        const text = document.createElement('div');
+        text.style.display = 'grid';
+        text.style.gap = '2px';
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = b.title || b.url;
+        const host = document.createElement('div');
+        host.className = 'host';
+        try { host.textContent = new URL(b.url).hostname.replace(/^www\./,''); } catch { host.textContent = ''; }
+        text.appendChild(title);
+        text.appendChild(host);
+
+        const rm = document.createElement('button');
+        rm.className = 'remove';
+        rm.type = 'button';
+        rm.title = 'Remove';
+        rm.textContent = '×';
+        rm.addEventListener('click', (e) => {
+          e.preventDefault();
+          bookmarks.splice(i, 1);
+          saveBookmarks(bookmarks);
+          renderBookmarks();
+        });
+
+        a.appendChild(icon);
+        a.appendChild(text);
+        a.appendChild(rm);
+
+        bmContainer.insertBefore(a, addBtn);
+      });
+
+      document.getElementById('window').classList.toggle('editing', editing);
+      addBtn.style.display = editing ? 'grid' : 'none';
+    }
+
+    function addBookmarkFlow() {
+      const title = prompt('Bookmark title:');
+      if (!title) return;
+      const url = prompt('Bookmark URL (include https://):');
+      try { new URL(url); } catch { alert('Please enter a valid URL, e.g. https://example.com'); return; }
+      const icon = prompt('Optional icon URL (leave blank to auto-detect):') || '';
+      bookmarks.push({ title, url, icon });
+      saveBookmarks(bookmarks);
+      renderBookmarks();
+    }
+
+    addBtn.addEventListener('click', addBookmarkFlow);
+    editToggle.addEventListener('click', () => {
+      editing = !editing;
+      editToggle.textContent = editing ? 'Done' : 'Edit';
+      renderBookmarks();
+    });
+
+    renderBookmarks();
+
+    // ============ Search UX ============
+    const q = document.getElementById('q');
+    const form = document.getElementById('searchForm');
+    form.addEventListener('submit', () => {
+      // Ensure query param name is 'q' for Kagi
+      q.name = 'q';
+    });
+    // Focus the search box on load for quick typing
+    window.addEventListener('load', () => { q.focus(); });
+  </script>
+</body>
+</html>
